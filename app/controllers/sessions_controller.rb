@@ -1,14 +1,18 @@
 class SessionsController < ApplicationController
-    skip_before_action :authorized, only: [:create]
     def create
       @user = User.find_by(email: params[:email])
   
-      if @user && @user.authenticate(params[:password])
-        token = @user.generate_jwt
-        render json: { user: @user, jwt: token }, status: :created
+      if @user&.authenticate(params[:password])
+        session[:user_id] = @user.id
+        render json: { status: 'Logged in' }, status: :ok
       else
-        render json: { error: 'Invalid email or password' }, status: :unauthorized
+        render json: { error: 'Invalid credentials' }, status: :unauthorized
       end
+    end
+  
+    def destroy
+      reset_session
+      render json: { status: 'Logged out' }, status: :ok
     end
   end
   
