@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_04_142206) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_05_064223) do
   create_table "comments", force: :cascade do |t|
     t.text "text"
     t.integer "user_id", null: false
@@ -39,7 +39,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_04_142206) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "views_count"
     t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
+  create_table "relationships", force: :cascade do |t|
+    t.integer "follower_id"
+    t.integer "followed_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -50,9 +58,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_04_142206) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "views", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_views_on_post_id"
+    t.index ["user_id"], name: "index_views_on_user_id"
+  end
+
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
   add_foreign_key "likes", "posts"
   add_foreign_key "likes", "users"
   add_foreign_key "posts", "users"
+  add_foreign_key "views", "posts"
+  add_foreign_key "views", "users"
 end

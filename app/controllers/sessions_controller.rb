@@ -1,14 +1,14 @@
 class SessionsController < ApplicationController
     def create
-      @user = User.find_by(email: params[:email])
-  
-      if @user&.authenticate(params[:password])
-        session[:user_id] = @user.id
-        render json: { status: 'Logged in' }, status: :ok
-      else
-        render json: { error: 'Invalid credentials' }, status: :unauthorized
+        @user = User.find_by_email(params[:email])
+        
+        if @user && @user.authenticate(params[:password])
+          session[:user_id] = @user.id
+          render json: { status: 'SUCCESS', message: 'Logged in', data: @user }, status: :ok
+        else
+          render json: { status: 'ERROR', message: 'Invalid email or password' }, status: :unprocessable_entity
+        end
       end
-    end
   
     def destroy
       reset_session

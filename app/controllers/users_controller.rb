@@ -3,8 +3,20 @@ class UsersController < ApplicationController
     before_action :set_user, only: [:show, :update, :destroy]
   
     def show
-      render json: @user
+      user_data = {
+        user: @user,
+        posts: @user.posts.map { |post| {
+          post: post,
+          likes: post.likes.count,
+          comments: post.comments.count,
+          views: post.views.count
+        }},
+        followers: @user.followers.count,
+        following: @user.following.count
+      }
+      render json: user_data
     end
+  
   
     def create
       @user = User.new(user_params)

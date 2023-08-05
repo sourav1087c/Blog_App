@@ -23,9 +23,13 @@ class PostsController < ApplicationController
         render json: @posts
       end
   
-    def show
-      render json: @post
-    end
+      def show
+        @post = Post.find(params[:id])
+    
+        View.create(user_id: current_user.id, post_id: @post.id) # creating a new view
+    
+        render json: @post
+      end
   
     def create
       @post = current_user.posts.build(post_params)
