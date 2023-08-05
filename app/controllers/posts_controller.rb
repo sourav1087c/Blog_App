@@ -33,6 +33,8 @@ class PostsController < ApplicationController
   
     def create
       @post = current_user.posts.build(post_params)
+      @post.views_count = 0
+      @post.comments_count = 0 # initialize comments_count as 0
   
       if @post.save
         render json: @post, status: :created, location: @post
