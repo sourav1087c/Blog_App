@@ -5,6 +5,8 @@ class Post < ApplicationRecord
     has_many :comments
     has_many :likes, counter_cache: :likes_count
     has_many :views
+    has_many :post_themes
+    has_many :themes, through: :post_themes
     
     validates :views_count, numericality: { greater_than_or_equal_to: 0 }
     validates :comments_count, numericality: { greater_than_or_equal_to: 0 }

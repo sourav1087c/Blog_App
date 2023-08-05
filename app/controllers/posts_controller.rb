@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
     before_action :set_post, only: [:show, :update, :destroy]
+    skip_before_action :authorized, only: [:top_posts]
   
     def index
         @posts = Post.all
@@ -30,6 +31,23 @@ class PostsController < ApplicationController
     
         render json: @post
       end
+
+      def top_posts
+        # Get all posts
+        posts = Post.all
+    
+        # Calculate a score for each post based on likes, comments, and views
+        scored_posts = posts.map do |post|
+          score = (post.likes_count.to_f * 0.5) + (post.comments.count.to_f * 0.3) + (post.views.count.to_f * 0.2)# assigning weights to different aspects of posts
+
+          [post, score]
+        end
+    
+        # Sort posts by score and take the top 10 (or however many you want)
+        top_posts = scored_posts.sort_by { |_, score| -score }.map(&:first).take(10)
+    
+        render json: top_posts
+      end
   
     def create
       @post = current_user.posts.build(post_params)
@@ -37,6 +55,8 @@ class PostsController < ApplicationController
       @post.comments_count = 0 # initialize comments_count as 0
   
       if @post.save
+        themes = Theme.find(params[:theme_ids])
+        @post.themes << themes
         render json: @post, status: :created, location: @post
       else
         render json: @post.errors, status: :unprocessable_entity
@@ -62,7 +82,7 @@ class PostsController < ApplicationController
     end
   
     def post_params
-      params.require(:post).permit(:title, :topic, :featured_image, :text, :published_at)
+      params.require(:post).permit(:title, :topic, :featured_image, :text, :published_at,:theme_id)
     end
   end
   
