@@ -6,9 +6,10 @@ Rails.application.routes.draw do
 
   resources :themes
   resources :posts
+  get '/users/:id/revenue', to: 'users#revenue', as: 'user_revenue'
+  put 'liked', to: 'likes#create'
+  put 'disliked', to: 'likes#destroy'
 
-  resources :likes, only: [:create]
-  delete '/likes', to: 'likes#destroy'
 
   resources :posts do
     resources :comments

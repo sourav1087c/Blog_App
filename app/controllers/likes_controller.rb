@@ -2,25 +2,30 @@ class LikesController < ApplicationController
     before_action :set_post
   
     def create
-      @like = @post.likes.build(user_id: current_user.id)
-  
+      @like = Like.new(like_params)
+
       if @like.save
-        @like.post.increment!(:likes_count)
-        render json: @like, status: :created
+          render json: { status: true }, status: :created
       else
-        render json: @like.errors, status: :unprocessable_entity
+          render json: { status: false }, status: :unprocessable_entity
       end
+  end
+
+  def destroy
+    @like = Like.find_by(like_params)
+
+    if @like
+        @like.destroy
+        render json: { status: true }, status: :ok
+    else
+        render json: { status: false }, status: :not_found
     end
-  
-    def destroy
-      @like = @post.likes.find_by(user_id: current_user.id)
-      @like.destroy
-    end
+  end
   
     private
   
-    def set_post
-      @post = Post.find(params[:post_id])
-    end
+    def like_params
+      params.require(:like).permit(:post_id, :user_id)
+  end
   end
   

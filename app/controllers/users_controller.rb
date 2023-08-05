@@ -16,7 +16,11 @@ class UsersController < ApplicationController
       }
       render json: user_data
     end
-  
+    
+    def revenue
+      user = User.find(params[:id])
+      render json: { revenue: user.revenue }
+    end
   
     def create
       @user = User.new(user_params)

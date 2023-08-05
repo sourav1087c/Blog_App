@@ -34,6 +34,42 @@ class User < ApplicationRecord
   def following?(other_user)
     following.include?(other_user)
   end
-      
+
+  def revenue
+    total_revenue = 0
+
+    self.posts.each do |post|
+      # Calculate revenue for each post
+      total_views = post.views.count
+      free_views = 1 # Each user gets one free view per day
+      paid_views = total_views > free_views ? total_views - free_views : 0
+
+      # Find the price per view depending on the user's subscription plan
+      price_per_view = case post.user.subscription.plan_id
+                       when 'plan_3_per_day'
+                         3.0 / 3 # $3 for 3 views
+                       when 'plan_5_per_day'
+                         5.0 / 5 # $5 for 5 views
+                       when 'plan_10_per_day'
+                         10.0 / 10 # $10 for 10 views
+                       else
+                         0 # For free plan or any other cases
+                       end
+
+      # Calculate revenue for this post
+      post_revenue = paid_views * price_per_view
+
+      # Accumulate the total revenue
+      total_revenue += post_revenue
+    end
+
+    # Apply the platform's cut (30%)
+    revenue_after_platform_cut = total_revenue * 0.7
+
+    # Return the revenue per user
+    revenue_after_platform_cut
   end
+end
+      
+
   
