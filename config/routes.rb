@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   resources :views, only: [:create]
   get 'top_posts', to: 'posts#top_posts'
 
+  post '/follow/:id', to: 'follows#create', as: 'follow_user'
+  delete '/unfollow/:id', to: 'follows#destroy', as: 'unfollow_user'
+
   resources :themes
   resources :posts
   get '/users/:id/revenue', to: 'users#revenue', as: 'user_revenue'

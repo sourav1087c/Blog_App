@@ -1,13 +1,14 @@
 class LikesController < ApplicationController
-    before_action :set_post
+    #before_action :set_post
   
     def create
       @like = Like.new(like_params)
 
       if @like.save
-          render json: { status: true }, status: :created
+            @like.post.increment!(:likes_count)
+            render json: { status: true }, status: :created
       else
-          render json: { status: false }, status: :unprocessable_entity
+            render json: { status: false }, status: :unprocessable_entity
       end
   end
 
@@ -15,6 +16,7 @@ class LikesController < ApplicationController
     @like = Like.find_by(like_params)
 
     if @like
+        @like.post.decrement!(:likes_count)
         @like.destroy
         render json: { status: true }, status: :ok
     else

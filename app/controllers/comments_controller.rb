@@ -31,6 +31,7 @@ class CommentsController < ApplicationController
     end
   
     def destroy
+      @comment.post.decrement!(:comment_count)
       @comment.destroy
     end
   

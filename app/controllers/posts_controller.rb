@@ -3,7 +3,7 @@ class PostsController < ApplicationController
     skip_before_action :authorized, only: [:top_posts]
   
     def index
-        @posts = Post.all
+      @posts = Post.order(created_at: :desc).paginate(page: params[:page], per_page: 5)
     
         if params[:title]
           @posts = @posts.by_title(params[:title])
@@ -43,7 +43,6 @@ class PostsController < ApplicationController
           [post, score]
         end
     
-        # Sort posts by score and take the top 10 (or however many you want)
         top_posts = scored_posts.sort_by { |_, score| -score }.map(&:first).take(10)
     
         render json: top_posts
@@ -52,10 +51,9 @@ class PostsController < ApplicationController
       def create
         @post = current_user.posts.build(post_params)
         @post.views_count = 0
-        @post.comments_count = 0 # initialize comments_count as 0
-      
+        @post.comments_count = 0 
         theme = Theme.find_or_create_by(name: params[:theme_name])
-        if theme.persisted? # Ensure that theme is successfully saved to the database
+        if theme.persisted? 
           @post.theme_id = theme.id
       
           if @post.save
@@ -68,7 +66,24 @@ class PostsController < ApplicationController
         end
       end
       
+      # def create
+      #   user = User.find(params[:post][:user_id]) # Get the user from the request parameters
+      #   @post = user.posts.build(post_params) # Build the post
+      #   @post.views_count = 0
+      #   @post.comments_count = 0
+      #   theme = Theme.find_or_create_by(name: params[:theme_name])
+      #   if theme.persisted? 
+      #     @post.theme_id = theme.id
       
+      #     if @post.save
+      #       render json: @post, status: :created, location: @post
+      #     else
+      #       render json: @post.errors, status: :unprocessable_entity
+      #     end
+      #   else
+      #     render json: { error: theme.errors.full_messages }, status: :unprocessable_entity
+      #   end
+      # end
   
     def update
       if @post.update(post_params)
