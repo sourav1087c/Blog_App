@@ -21,7 +21,7 @@ class PostsController < ApplicationController
           @posts = @posts.by_date(Date.parse(params[:date]))
         end
     
-        render json: @posts
+        render json: @posts.as_json(methods: :reading_time)
       end
   
       def show
@@ -29,7 +29,7 @@ class PostsController < ApplicationController
     
         View.create(user_id: current_user.id, post_id: @post.id) # creating a new view
     
-        render json: @post
+        render json: { post: @post, reading_time: @post.reading_time }
       end
 
       def top_posts
