@@ -49,19 +49,26 @@ class PostsController < ApplicationController
         render json: top_posts
       end
   
-    def create
-      @post = current_user.posts.build(post_params)
-      @post.views_count = 0
-      @post.comments_count = 0 # initialize comments_count as 0
-  
-      if @post.save
-        themes = Theme.find(params[:theme_ids])
-        @post.themes << themes
-        render json: @post, status: :created, location: @post
-      else
-        render json: @post.errors, status: :unprocessable_entity
+      def create
+        @post = current_user.posts.build(post_params)
+        @post.views_count = 0
+        @post.comments_count = 0 # initialize comments_count as 0
+      
+        theme = Theme.find_or_create_by(name: params[:theme_name])
+        if theme.persisted? # Ensure that theme is successfully saved to the database
+          @post.theme_id = theme.id
+      
+          if @post.save
+            render json: @post, status: :created, location: @post
+          else
+            render json: @post.errors, status: :unprocessable_entity
+          end
+        else
+          render json: { error: theme.errors.full_messages }, status: :unprocessable_entity
+        end
       end
-    end
+      
+      
   
     def update
       if @post.update(post_params)
@@ -82,7 +89,11 @@ class PostsController < ApplicationController
     end
   
     def post_params
-      params.require(:post).permit(:title, :topic, :featured_image, :text, :published_at,:theme_id)
+      params.require(:post).permit(:title, :topic, :featured_image, :text, :published_at)
     end
+
+    # def post_params
+    #   params.require(:post).permit(:title, :topic, :featured_image, :text, :published_at)
+    # end
   end
   
