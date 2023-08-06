@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_05_155553) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_06_065118) do
   create_table "comments", force: :cascade do |t|
     t.text "text"
     t.integer "user_id", null: false
@@ -75,6 +75,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_05_155553) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "bio"
+    t.string "profile_image"
   end
 
   create_table "views", force: :cascade do |t|

@@ -11,7 +11,10 @@ class User < ApplicationRecord
   
     validates :name, :email, presence: true
     validates :email, uniqueness: true
-  
+
+    validates :bio, length: { maximum: 500 } # limit bio length to 500 characters
+    validates :profile_image, format: { with: /\A(http|https):\/\/.*/ , message: "must start with http:// or https://" }, allow_blank: true
+    
     has_many :posts
     has_many :comments
     has_many :likes
